@@ -2,7 +2,7 @@ name: Update-Xray-Core
 
 on:
   schedule:
-    - cron: 0/2 * * * *
+    - cron: 0/5 * * * *
 
 jobs:
 
@@ -27,9 +27,22 @@ jobs:
       run: |
         git clone -b main https://github.com/XTLS/Xray-core.git --depth=1 ./tmp/Xray-Core
         cp -rf ./tmp/Xray-Core/app ./
+        cp -rf ./tmp/Xray-Core/common ./
+        cp -rf ./tmp/Xray-Core/core ./
+        cp -rf ./tmp/Xray-Core/features ./
+        cp -rf ./tmp/Xray-Core/infra ./
+        cp -rf ./tmp/Xray-Core/main ./
+        cp -rf ./tmp/Xray-Core/proxy ./
+        cp -rf ./tmp/Xray-Core/testing ./
+        cp -rf ./tmp/Xray-Core/transport ./
+        cp -rf ./tmp/Xray-Core/README.md ./
+        cp -rf ./tmp/Xray-Core/go.mod ./
+        cp -rf ./tmp/Xray-Core/go.sum ./
+        cp -rf ./tmp/Xray-Core/LICENSE ./
+        cp -rf ./tmp/Xray-Core/CODE_OF_CONDUCT.md ./
     - name: Apply commit changes
       run: |
-        git add ./app/
+        git add ./app/ ./common/ ./core/ ./features/ ./infra/ ./main/ ./proxy/ ./testing/ ./transport/ ./README.md ./go.mod ./go.sum ./LICENSE ./CODE_OF_CONDUCT.md
         echo -e "[bot] Xray-Core: update\n\nlatest commit: $(cat ./tmp/Xray-Core/.git/refs/heads/main)" > ./tmp/message
         git commit --file="./tmp/message" || exit 0
     - name: Push Commits
