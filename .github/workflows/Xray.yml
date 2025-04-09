@@ -29,7 +29,7 @@ jobs:
         cp -rf ./tmp/Xray-Core/app ./
     - name: Apply commit changes
       run: |
-        git add ./app
+        git add ./app/
         echo -e "[bot] Xray-Core: update\n\nlatest commit: $(cat ./tmp/Xray-Core/.git/refs/heads/main)" > ./tmp/message
         git commit --file="./tmp/message" || exit 0
     - name: Push Commits
