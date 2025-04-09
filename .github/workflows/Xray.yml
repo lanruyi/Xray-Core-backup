@@ -2,7 +2,7 @@ name: Update-Xray-Core
 
 on:
   schedule:
-    - cron: 0/3 * * * *
+    - cron: 0/1 * * * *
 
 jobs:
 
@@ -26,10 +26,10 @@ jobs:
     - name: Load latest Xray-Core
       run: |
         git clone -b main https://github.com/XTLS/Xray-core.git --depth=1 ./tmp/Xray-Core
-        cp -rf ./tmp/Xray-Core ./
+        cp -rf ./tmp/Xray-Core/app ./
     - name: Apply commit changes
       run: |
-        git add *
+        git add ./app
         echo -e "[bot] Xray-Core: update\n\nlatest commit: $(cat ./tmp/Xray-Core/.git/refs/heads/main)" > ./tmp/message
         git commit --file="./tmp/message" || exit 0
     - name: Push Commits
