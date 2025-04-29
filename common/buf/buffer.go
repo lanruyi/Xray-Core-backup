@@ -12,6 +12,7 @@ const (
 	// Size of a regular buffer.
 	Size = 8192
 )
+
 var zero = [Size * 10]byte{0}
 
 var pool = bytespool.GetPool(Size)
