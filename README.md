@@ -1,5 +1,9 @@
 # Project X
 
+[![Project X NFT](https://raw2.seadn.io/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/7fa9ce900fb39b44226348db330e32/8b7fa9ce900fb39b44226348db330e32.svg)](https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/1)
+
+### [Collect a Project X NFT to support the development of Project X!](https://opensea.io/item/ethereum/0x5ee362866001613093361eb8569d59c4141b76d1/1)
+
 [Project X](https://github.com/XTLS) originates from XTLS protocol, providing a set of network tools such as [Xray-core](https://github.com/XTLS/Xray-core) and [REALITY](https://github.com/XTLS/REALITY).
 
 [README](https://github.com/XTLS/Xray-core#readme) is open, so feel free to submit your project [here](https://github.com/XTLS/Xray-core/pulls).
@@ -98,11 +102,13 @@
   - [V2RayXS](https://github.com/tzmax/V2RayXS)
   - [Furious](https://github.com/LorenEteval/Furious)
   - [OneXray](https://github.com/OneXray/OneXray)
+  - [GoXRay](https://github.com/goxray/desktop)
   - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
 - Linux
   - [v2rayA](https://github.com/v2rayA/v2rayA)
   - [Furious](https://github.com/LorenEteval/Furious)
   - [GorzRay](https://github.com/ketetefid/GorzRay)
+  - [GoXRay](https://github.com/goxray/desktop)
   - [AnyPortal](https://github.com/AnyPortal/AnyPortal)
 
 ## Others that support VLESS, XTLS, REALITY, XUDP, PLUX...
