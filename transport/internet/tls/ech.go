@@ -55,7 +55,7 @@ func ApplyECH(c *Config, config *tls.Config) error {
 		defer func() {
 			// if failed to get ECHConfig, use an invalid one to make connection fail
 			if err != nil {
-				if c.EchForceQuery || errors.Cause(err) != dns2.ErrEmptyResponse {
+				if c.EchForceQuery {
 					ECHConfig = []byte{1, 1, 4, 5, 1, 4}
 				}
 			}
@@ -129,7 +129,7 @@ func (c *ECHConfigCache) Update(domain string, server string, isLockedUpdate boo
 	errors.LogDebug(context.Background(), "Trying to query ECH config for domain: ", domain, " with ECH server: ", server)
 	echConfig, ttl, err := dnsQuery(server, domain, sockopt)
 	if err != nil {
-		if forceQuery || errors.Cause(err) != dns2.ErrEmptyResponse {
+		if forceQuery || ttl == 0 {
 			return nil, err
 		}
 	}
