@@ -54,7 +54,7 @@ func (v *MemoryValidator) Del(e string) error {
 
 // Get a VLESS user with UUID, nil if user doesn't exist.
 func (v *MemoryValidator) Get(id uuid.UUID) *protocol.MemoryUser {
-	u, _ := v.users.Load([15]byte(id.Bytes()))
+	u, _ := v.users.Load([15]byte(id[:]))
 	if u != nil {
 		return u.(*protocol.MemoryUser)
 	}
