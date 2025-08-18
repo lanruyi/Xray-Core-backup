@@ -41,7 +41,7 @@ type Context interface {
 	// GetUser returns the user email from the connection content, if exists.
 	GetUser() string
 
-	// GetVlessRoute returns the user-sent VLESS UUID's last byte, if exists.
+	// GetVlessRoute returns the user-sent VLESS UUID's last two bytes, if exists.
 	GetVlessRoute() net.Port
 
 	// GetAttributes returns extra attributes from the conneciont content.

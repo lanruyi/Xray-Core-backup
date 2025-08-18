@@ -456,7 +456,7 @@ func (h *Handler) Process(ctx context.Context, network net.Network, connection s
 	}
 	inbound.Name = "vless"
 	inbound.User = request.User
-	inbound.VlessRoute = net.Port(userSentID[15])
+	inbound.VlessRoute = net.PortFromBytes(userSentID[14:])
 
 	account := request.User.Account.(*vless.MemoryAccount)
 
