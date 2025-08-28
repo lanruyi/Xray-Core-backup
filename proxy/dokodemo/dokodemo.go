@@ -2,7 +2,6 @@ package dokodemo
 
 import (
 	"context"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -178,12 +177,7 @@ func (d *DokodemoDoor) Process(ctx context.Context, network net.Network, conn st
 				return err
 			}
 			writer = NewPacketWriter(pConn, &dest, mark, back)
-			defer func() {
-				// runtime.Gosched()
-				// common.Interrupt(link.Reader) // maybe duplicated
-				runtime.Gosched()
-				writer.(*PacketWriter).Close() // close fake UDP conns
-			}()
+			defer writer.(*PacketWriter).Close() // close fake UDP conns
 		}
 	}
 
