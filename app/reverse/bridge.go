@@ -118,7 +118,7 @@ func NewBridgeWorker(domain string, tag string, d routing.Dispatcher) (*BridgeWo
 		tag:        tag,
 	}
 
-	worker, err := mux.NewServerWorker(context.Background(), w, link, false)
+	worker, err := mux.NewServerWorker(context.Background(), w, link)
 	if err != nil {
 		return nil, err
 	}
