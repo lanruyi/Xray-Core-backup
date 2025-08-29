@@ -179,12 +179,7 @@ func (s *Server) handleConnect(ctx context.Context, _ *http.Request, buffer *buf
 		return errors.New("failed to write back OK response").Base(err)
 	}
 
-	if inbound.CanSpliceCopy == 2 {
-		inbound.CanSpliceCopy = 1
-	}
-
 	reader := buf.NewReader(conn)
-
 	if buffer.Buffered() > 0 {
 		payload, err := buf.ReadFrom(io.LimitReader(buffer, int64(buffer.Buffered())))
 		if err != nil {
@@ -194,6 +189,9 @@ func (s *Server) handleConnect(ctx context.Context, _ *http.Request, buffer *buf
 		buffer = nil
 	}
 
+	if inbound.CanSpliceCopy == 2 {
+		inbound.CanSpliceCopy = 1
+	}
 	if err := dispatcher.DispatchLink(ctx, dest, &transport.Link{
 		Reader: &buf.TimeoutWrapperReader{Reader: reader},
 		Writer: buf.NewWriter(conn)},
