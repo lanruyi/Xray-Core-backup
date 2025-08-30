@@ -182,9 +182,9 @@ func getConfigFilePath(verbose bool) cmdarg.Arg {
 	}
 
 	if workingDir, err := os.Getwd(); err == nil {
-		suffixes := []string{"json", "jsonc", "toml", "yaml", "yml"}
+		suffixes := []string{".json", ".jsonc", ".toml", ".yaml", ".yml"}
 		for _, suffix := range suffixes {
-			configFile := filepath.Join(workingDir, "config."+suffix)
+			configFile := filepath.Join(workingDir, "config"+suffix)
 			if fileExists(configFile) {
 				if verbose {
 					log.Println("Using default config: ", configFile)
