@@ -227,15 +227,12 @@ func ParsePadding(padding string, paddingLens, paddingGaps *[][3]int) (err error
 	maxLen := 0
 	for i, s := range strings.Split(padding, ".") {
 		x := strings.Split(s, "-")
-		if len(x) != 3 || x[0] == "" || x[1] == "" || x[2] == "" {
+		if len(x) < 3 || x[0] == "" || x[1] == "" || x[2] == "" {
 			return errors.New("invalid padding lenth/gap parameter: " + s)
 		}
 		y := [3]int{}
 		if y[0], err = strconv.Atoi(x[0]); err != nil {
 			return
-		}
-		if y[0] > 100 {
-			return errors.New("probability must not be larger than 100")
 		}
 		if y[1], err = strconv.Atoi(x[1]); err != nil {
 			return
@@ -243,7 +240,7 @@ func ParsePadding(padding string, paddingLens, paddingGaps *[][3]int) (err error
 		if y[2], err = strconv.Atoi(x[2]); err != nil {
 			return
 		}
-		if i == 0 && (y[0] != 100 || y[1] < 17 || y[2] < 17) {
+		if i == 0 && (y[0] < 100 || y[1] < 17 || y[2] < 17) {
 			return errors.New("first padding length must not be smaller than 17")
 		}
 		if i%2 == 0 {
