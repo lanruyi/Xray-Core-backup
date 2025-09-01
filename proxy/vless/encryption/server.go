@@ -131,7 +131,7 @@ func (i *ServerInstance) Handshake(conn net.Conn, fallback *[]byte) (*CommonConn
 			if err != nil {
 				return nil, err
 			}
-			if publicKey.Bytes()[31] > 127 { // we just don't want the observer can change even one bit without break the connection, though it has nothing to do with security
+			if publicKey.Bytes()[31] > 127 { // we just don't want the observer can change even one bit without breaking the connection, though it has nothing to do with security
 				return nil, errors.New("the highest bit of the last byte of the peer-sent X25519 public key must be 0")
 			}
 			nfsKey, err = k.ECDH(publicKey)

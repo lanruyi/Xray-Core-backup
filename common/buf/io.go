@@ -54,16 +54,16 @@ func (r *TimeoutWrapperReader) ReadMultiBufferTimeout(duration time.Duration) (M
 			close(r.done)
 		}()
 	}
-	timeot := make(chan struct{})
+	timeout := make(chan struct{})
 	go func() {
 		time.Sleep(duration)
-		close(timeot)
+		close(timeout)
 	}()
 	select {
 	case <-r.done:
 		r.done = nil
 		return r.mb, r.err
-	case <-timeot:
+	case <-timeout:
 		return nil, nil
 	}
 }
