@@ -18,6 +18,7 @@ import (
 )
 
 type ServerSession struct {
+	Expire  time.Time
 	PfsKey  []byte
 	NfsKeys sync.Map
 }
@@ -34,6 +35,7 @@ type ServerInstance struct {
 
 	RWLock   sync.RWMutex
 	Sessions map[[16]byte]*ServerSession
+	Closed   bool
 }
 
 func (i *ServerInstance) Init(nfsSKeysBytes [][]byte, xorMode, seconds uint32, padding string) (err error) {
@@ -65,9 +67,35 @@ func (i *ServerInstance) Init(nfsSKeysBytes [][]byte, xorMode, seconds uint32, p
 	}
 	i.RelaysLength -= 32
 	i.XorMode = xorMode
-	i.Seconds = seconds
-	i.Sessions = make(map[[16]byte]*ServerSession)
+	if seconds > 0 {
+		i.Seconds = seconds
+		i.Sessions = make(map[[16]byte]*ServerSession)
+		go func() {
+			for {
+				time.Sleep(time.Minute)
+				i.RWLock.Lock()
+				if i.Closed {
+					i.RWLock.Unlock()
+					return
+				}
+				now := time.Now()
+				for ticket, session := range i.Sessions {
+					if now.After(session.Expire) {
+						delete(i.Sessions, ticket)
+					}
+				}
+				i.RWLock.Unlock()
+			}
+		}()
+	}
 	return ParsePadding(padding, &i.PaddingLens, &i.PaddingGaps)
+}
+
+func (i *ServerInstance) Close() (err error) {
+	i.RWLock.Lock()
+	i.Closed = true
+	i.RWLock.Unlock()
+	return
 }
 
 func (i *ServerInstance) Handshake(conn net.Conn, fallback *[]byte) (*CommonConn, error) {
@@ -224,18 +252,14 @@ func (i *ServerInstance) Handshake(conn net.Conn, fallback *[]byte) (*CommonConn
 
 	ticket := make([]byte, 16)
 	rand.Read(ticket)
-	seconds := i.Seconds * uint32(crypto.RandBetween(50, 100)) / 100
-	copy(ticket, EncodeLength(int(seconds)))
-	if seconds > 0 {
+	copy(ticket, EncodeLength(int(i.Seconds*4/5)))
+	if i.Seconds > 0 {
 		i.RWLock.Lock()
-		i.Sessions[[16]byte(ticket)] = &ServerSession{PfsKey: pfsKey}
+		i.Sessions[[16]byte(ticket)] = &ServerSession{
+			Expire: time.Now().Add(time.Duration(i.Seconds) * time.Second),
+			PfsKey: pfsKey,
+		}
 		i.RWLock.Unlock()
-		go func() {
-			time.Sleep(time.Duration(seconds)*time.Second + time.Minute)
-			i.RWLock.Lock()
-			delete(i.Sessions, [16]byte(ticket))
-			i.RWLock.Unlock()
-		}()
 	}
 
 	pfsKeyExchangeLength := 1088 + 32 + 16
