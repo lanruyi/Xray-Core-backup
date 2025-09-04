@@ -96,13 +96,13 @@ func (c *VLessInboundConfig) Build() (proto.Message, error) {
 		default:
 			return false
 		}
-		t := strings.Split(strings.TrimSuffix(s[2], "s"), "-")
+		t := strings.SplitN(strings.TrimSuffix(s[2], "s"), "-", 2)
 		i, err := strconv.Atoi(t[0])
 		if err != nil {
 			return false
 		}
 		config.SecondsFrom = int64(i)
-		if len(t) > 1 {
+		if len(t) == 2 {
 			i, err := strconv.Atoi(t[1])
 			if err != nil {
 				return false
