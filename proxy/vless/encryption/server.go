@@ -71,6 +71,10 @@ func (i *ServerInstance) Init(nfsSKeysBytes [][]byte, xorMode uint32, secondsFro
 	i.XorMode = xorMode
 	i.SecondsFrom = secondsFrom
 	i.SecondsTo = secondsTo
+	err = ParsePadding(padding, &i.PaddingLens, &i.PaddingGaps)
+	if err != nil {
+		return
+	}
 	if i.SecondsFrom > 0 || i.SecondsTo > 0 {
 		i.Lasts = make(map[int64][16]byte)
 		i.Tickets = make([][16]byte, 0, 1024)
@@ -100,7 +104,7 @@ func (i *ServerInstance) Init(nfsSKeysBytes [][]byte, xorMode uint32, secondsFro
 			}
 		}()
 	}
-	return ParsePadding(padding, &i.PaddingLens, &i.PaddingGaps)
+	return
 }
 
 func (i *ServerInstance) Close() (err error) {
