@@ -83,7 +83,7 @@ func (i *ServerInstance) Init(nfsSKeysBytes [][]byte, xorMode uint32, secondsFro
 					i.RWLock.Unlock()
 					return
 				}
-				minute := time.Now().Unix() % 60
+				minute := time.Now().Unix() / 60
 				last := i.Lasts[minute]
 				delete(i.Lasts, minute)
 				delete(i.Lasts, minute-1) // for insurance
@@ -273,7 +273,7 @@ func (i *ServerInstance) Handshake(conn net.Conn, fallback *[]byte) (*CommonConn
 	copy(ticket[:], EncodeLength(int(seconds)))
 	if seconds > 0 {
 		i.RWLock.Lock()
-		i.Lasts[(time.Now().Unix()+max(i.SecondsFrom, i.SecondsTo))%60+2] = ticket
+		i.Lasts[(time.Now().Unix()+max(i.SecondsFrom, i.SecondsTo))/60+2] = ticket
 		i.Tickets = append(i.Tickets, ticket)
 		i.Sessions[ticket] = &ServerSession{
 			PfsKey: pfsKey,
