@@ -6,11 +6,11 @@
 
 ## Sponsors
 
-[![Remnaware](https://github.com/user-attachments/assets/a22d34ae-01ee-441c-843a-85356748ed1e)](https://docs.rw)
+[![Remnawave](https://github.com/user-attachments/assets/a22d34ae-01ee-441c-843a-85356748ed1e)](https://docs.rw)
 
 [![Happ](https://github.com/user-attachments/assets/14055dab-e8bb-48bd-89e8-962709e4098e)](https://happ.su)
 
-[**Sponsor Xray-core**](https://github.com/XTLS/Xray-core/issues/3668#issuecomment-3550952808)
+[**Sponsor Xray-core**](https://github.com/XTLS/Xray-core/issues/3668)
 
 ## Donation & NFTs
 
