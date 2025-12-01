@@ -145,7 +145,7 @@ func (h *Handler) Process(ctx context.Context, link *transport.Link, dialer inte
 			for range h.testpre { // TODO: randomize
 				go func() {
 					defer func() { recover() }()
-					ctx = xctx.ContextWithID(context.Background(), session.NewID())
+					ctx := xctx.ContextWithID(context.Background(), session.NewID())
 					for {
 						time.Sleep(time.Millisecond * 200) // TODO: randomize
 						conn, err := dialer.Dial(ctx, rec.Destination)
