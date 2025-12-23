@@ -2,12 +2,10 @@ package buf
 
 import (
 	"io"
-	"sync"
 	"time"
 
 	"github.com/xtls/xray-core/common/errors"
 	"github.com/xtls/xray-core/common/signal"
-	"github.com/xtls/xray-core/features/policy"
 	"github.com/xtls/xray-core/features/stats"
 )
 
@@ -115,12 +113,7 @@ func Copy(reader Reader, writer Writer, options ...CopyOption) error {
 	for _, option := range options {
 		option(&handler)
 	}
-	var err error
-	if sReader, ok := reader.(*SingleReader); ok && false {
-		err = copyV(sReader, writer, &handler)
-	} else {
-		err = copyInternal(reader, writer, &handler)
-	}
+	err := copyInternal(reader, writer, &handler)
 	if err != nil && errors.Cause(err) != io.EOF {
 		return err
 	}
@@ -139,93 +132,4 @@ func CopyOnceTimeout(reader Reader, writer Writer, timeout time.Duration) error 
 		return err
 	}
 	return writer.WriteMultiBuffer(mb)
-}
-
-func copyV(r *SingleReader, w Writer, handler *copyHandler) error {
-	// channel buffer size is maxBuffer/maxPerPacketLen (ignore the case of many small packets)
-	// default buffer size:
-	// 0 in ARM MIPS MIPSLE
-	// 4kb in ARM64 MIPS64 MIPS64LE
-	// 512kb in others
-	channelBuffer := (policy.SessionDefault().Buffer.PerConnection) / Size
-	if channelBuffer <= 0 {
-		channelBuffer = 4
-	}
-	cache := make(chan *Buffer, channelBuffer)
-	stopRead := make(chan struct{})
-	var rErr error
-	var wErr error
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-	// downlink
-	go func() {
-		defer wg.Done()
-		defer close(cache)
-		for {
-			b, err := r.readBuffer()
-			if err == nil {
-				select {
-				case cache <- b:
-				// must be write error
-				case <-stopRead:
-					b.Release()
-					return
-				}
-			} else {
-				rErr = err
-				select {
-				case cache <- b:
-				case <-stopRead:
-					b.Release()
-				}
-				return
-			}
-		}
-	}()
-	// uplink
-	go func() {
-		defer wg.Done()
-		for {
-			b, ok := <-cache
-			if !ok {
-				return
-			}
-			var buffers = []*Buffer{b}
-			for stop := false; !stop; {
-				select {
-				case b, ok := <-cache:
-					if !ok {
-						stop = true
-						continue
-					}
-					buffers = append(buffers, b)
-				default:
-					stop = true
-				}
-			}
-			mb := MultiBuffer(buffers)
-			err := w.WriteMultiBuffer(mb)
-			for _, handler := range handler.onData {
-				handler(mb)
-			}
-			ReleaseMulti(mb)
-			if err != nil {
-				wErr = err
-				close(stopRead)
-				return
-			}
-		}
-	}()
-	wg.Wait()
-	// drain cache
-	for b := range cache {
-		b.Release()
-	}
-	if wErr != nil {
-		return writeError{wErr}
-	}
-	if rErr != nil {
-		return readError{rErr}
-	}
-	return nil
 }
