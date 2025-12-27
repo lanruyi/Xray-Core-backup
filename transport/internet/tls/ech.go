@@ -196,7 +196,6 @@ func QueryRecord(domain string, server string, forceQuery string, sockopt *inter
 // return ECH config, TTL and error
 func dnsQuery(server string, domain string, sockopt *internet.SocketConfig) ([]byte, uint32, error) {
 	m := new(dns.Msg)
-	m.RecursionDesired = true
 	var dnsResolve []byte
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeHTTPS)
 	// for DOH server
