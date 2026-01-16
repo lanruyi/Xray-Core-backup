@@ -298,7 +298,7 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 	CAs := r.RootCAs
 	var verifyResult verifyResult
 	var verifiedCert *x509.Certificate
-	if len(r.PinnedPeerCertSha256) > 0 {
+	if r.PinnedPeerCertSha256 != nil {
 		verifyResult, verifiedCert = verifyChain(certs, r.PinnedPeerCertSha256)
 		switch verifyResult {
 		case certNotFound:
@@ -313,7 +313,7 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		}
 	}
 
-	if len(r.VerifyPeerCertInNames) > 0 {
+	if r.VerifyPeerCertInNames != nil { // RAW's Dial() may make it empty but not nil
 		opts := x509.VerifyOptions{
 			Roots:         CAs,
 			CurrentTime:   time.Now(),
@@ -349,7 +349,7 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		return errors.New("peer cert is invalid (againsts pinned CA and serverName)")
 	}
 
-	return nil // len(r.PinnedPeerCertSha256)==0 && len(r.VerifyPeerCertInNames)==0
+	return nil // len(r.PinnedPeerCertSha256)==nil && len(r.VerifyPeerCertInNames)==nil
 }
 
 type RandCarrier struct {
@@ -395,8 +395,15 @@ func (c *Config) GetTLSConfig(opts ...Option) *tls.Config {
 		VerifyPeerCertificate:  randCarrier.verifyPeerCert,
 	}
 	randCarrier.Config = config
-	if len(c.VerifyPeerCertInNames) > 0 || len(c.PinnedPeerCertSha256) > 0 {
+	if len(c.VerifyPeerCertInNames) > 0 {
 		config.InsecureSkipVerify = true
+	} else {
+		randCarrier.VerifyPeerCertInNames = nil
+	}
+	if len(c.PinnedPeerCertSha256) > 0 {
+		config.InsecureSkipVerify = true
+	} else {
+		randCarrier.PinnedPeerCertSha256 = nil
 	}
 
 	for _, opt := range opts {
