@@ -302,7 +302,7 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		verifyResult, verifiedCert = verifyChain(certs, r.PinnedPeerCertSha256)
 		switch verifyResult {
 		case certNotFound:
-			return errors.New("peer cert is unrecognized")
+			return errors.New("peer cert is unrecognized (againsts pinnedPeerCertSha256)")
 		case foundLeaf:
 			return nil
 		case foundCA:
@@ -323,11 +323,17 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 			opts.Intermediates.AddCert(cert)
 		}
 		for _, opts.DNSName = range r.VerifyPeerCertInNames {
-			if _, err := certs[0].Verify(opts); err != nil {
-				return errors.New("peer cert is unrecognized")
+			if _, err := certs[0].Verify(opts); err == nil {
+				return nil
 			}
 		}
-	} else if verifyResult == foundCA { // if found CA, we need to verify here
+		if verifyResult == foundCA {
+			errors.New("peer cert is invalid (againsts pinned CA and verifyPeerCertInNames)")
+		}
+		return errors.New("peer cert is invalid (againsts root CAs and verifyPeerCertInNames)")
+	}
+
+	if verifyResult == foundCA { // if found CA, we need to verify here
 		opts := x509.VerifyOptions{
 			Roots:         CAs,
 			CurrentTime:   time.Now(),
@@ -337,11 +343,13 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		for _, cert := range certs[1:] {
 			opts.Intermediates.AddCert(cert)
 		}
-		if _, err := certs[0].Verify(opts); err != nil {
-			return errors.New("peer cert is unrecognized")
+		if _, err := certs[0].Verify(opts); err == nil {
+			return nil
 		}
+		return errors.New("peer cert is invalid (againsts pinned CA and serverName)")
 	}
-	return nil
+
+	return nil // len(r.PinnedPeerCertSha256)==0 && len(r.VerifyPeerCertInNames)==0
 }
 
 type RandCarrier struct {
