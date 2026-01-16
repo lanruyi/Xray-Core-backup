@@ -323,8 +323,8 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 			opts.Intermediates.AddCert(cert)
 		}
 		for _, opts.DNSName = range r.VerifyPeerCertInNames {
-			if _, err := certs[0].Verify(opts); err == nil {
-				return nil
+			if _, err := certs[0].Verify(opts); err != nil {
+				return errors.New("peer cert is unrecognized")
 			}
 		}
 	} else if verifyResult == foundCA { // if found CA, we need to verify here
@@ -337,8 +337,8 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		for _, cert := range certs[1:] {
 			opts.Intermediates.AddCert(cert)
 		}
-		if _, err := certs[0].Verify(opts); err == nil {
-			return nil
+		if _, err := certs[0].Verify(opts); err != nil {
+			return errors.New("peer cert is unrecognized")
 		}
 	}
 	return nil
