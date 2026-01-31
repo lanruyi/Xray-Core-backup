@@ -582,7 +582,7 @@ type TLSConfig struct {
 	CurvePreferences        *StringList      `json:"curvePreferences"`
 	MasterKeyLog            string           `json:"masterKeyLog"`
 	PinnedPeerCertSha256    string           `json:"pinnedPeerCertSha256"`
-	VerifyPeerCertByName    string           `json:"VerifyPeerCertByName"`
+	VerifyPeerCertByName    string           `json:"verifyPeerCertByName"`
 	VerifyPeerCertInNames   []string         `json:"verifyPeerCertInNames"`
 	ECHServerKeys           string           `json:"echServerKeys"`
 	ECHConfigList           string           `json:"echConfigList"`

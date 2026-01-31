@@ -349,7 +349,7 @@ func (r *RandCarrier) verifyPeerCert(rawCerts [][]byte, verifiedChains [][]*x509
 		return errors.New("peer cert is invalid (against pinned CA and serverName)")
 	}
 
-	return nil // len(r.PinnedPeerCertSha256)==nil && len(r.verifyPeerCertByName)==nil
+	return nil // r.PinnedPeerCertSha256==nil && r.verifyPeerCertByName==nil
 }
 
 type RandCarrier struct {
